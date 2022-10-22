@@ -16,13 +16,13 @@ nvidia-docker run -it neurocuts:latest bash
 
 To check that everything works, when inside, run
 ```bash
-python run_neurocuts.py --rules=acl5_1k --fast --gpu --num-workers 2 
+python run_neurocuts.py --rules=acl5_1k --fast --gpu --num-workers 16 
 ```
 
 ## Running NeuroCuts
 
 You can train a NeuroCuts policy for the small `acl5_1k` rule set using the following command. This should converge to an memory access time of 9-10 within 50k timesteps:
-```
+```bash
 python run_neurocuts.py --rules=acl5_1k --fast
 ```
 

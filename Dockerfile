@@ -1,4 +1,7 @@
-FROM tensorflow/tensorflow:1.13.1-gpu-py3
+FROM tensorflow/tensorflow:1.14.0-gpu-py3
+
+# python3.5 has its problems
+#FROM tensorflow/tensorflow:1.13.1-gpu-py3
 
 WORKDIR ~/build
 

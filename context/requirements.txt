@@ -1,9 +1,10 @@
 ray==0.7.6
 # dm-tree==0.1.0
 # pandas==0.24.2
-# gym==0.15.3
+gym==0.17.3
 # numpy==1.16.4
 opencv-python
 tabulate
 requests
 psutil
+lz4
