@@ -1,7 +1,10 @@
-ray==2.0.1
+ray==0.8.7
 opencv-python
 setproctitle
 tabulate
 requests
+pandas
 psutil
+scipy
+gym
 lz4

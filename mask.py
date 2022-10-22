@@ -1,6 +1,5 @@
 import tensorflow.compat.v1 as tf
 
-import ray
 from ray.rllib.models import Model
 from ray.rllib.models.tf.misc import normc_initializer
 
