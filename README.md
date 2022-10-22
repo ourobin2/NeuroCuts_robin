@@ -2,6 +2,12 @@
 
 NeuroCuts is a deep RL algorithm for generating optimized packet classification trees. See the [preprint](https://arxiv.org/abs/1902.10319) for an overview.
 
+## What this fork is for
+
+It took me a while to make NeuroCuts mid-2019 code work in October 2022. 
+This repository's purpose is to make the setup easier 
+(e.g. for results reproduction or whatever).
+
 ## Running NeuroCuts
 
 You can train a NeuroCuts policy for the small `acl5_1k` rule set using the following command. This should converge to an memory access time of 9-10 within 50k timesteps:
