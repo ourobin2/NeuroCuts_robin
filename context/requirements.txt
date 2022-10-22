@@ -4,6 +4,7 @@ setproctitle
 tensorboardX
 tabulate
 dm_tree
+gputil
 requests
 pandas
 psutil
