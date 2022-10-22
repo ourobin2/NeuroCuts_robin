@@ -5,7 +5,7 @@ WORKDIR ~/build
 RUN chmod 1777 /tmp
 RUN pip install --upgrade pip cmake
 #RUN apt update && apt install -y build-essential
-RUN apt install libgl1 -y
+RUN apt-get update && apt install libgl1 -y
 COPY ./context/requirements.txt .
 RUN pip install -r requirements.txt
 
