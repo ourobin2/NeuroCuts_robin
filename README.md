@@ -8,6 +8,13 @@ NeuroCuts is a deep RL algorithm for generating optimized packet classification 
 This repository's purpose is to make the setup easier 
 (e.g. for results reproduction or whatever).
 
+You don't have to use Docker, you could just
+1. install tensorflow:1.14.0,
+2. take a look at [requirements.txt](/context/requirements.txt)
+
+This code might work with other versions of libraries; my primary 
+goal was to prepare a config that WORKS. No guarantees, though :)
+
 ```bash
 cd neurocuts-docker
 docker build -t neurocuts .
@@ -16,7 +23,7 @@ nvidia-docker run -it neurocuts:latest bash
 
 To check that everything works, when inside, run
 ```bash
-python run_neurocuts.py --rules=acl5_1k --fast --gpu --num-workers 16 
+python run_neurocuts.py --rules=acl5_1k --fast --gpu --num-workers 20
 ```
 
 ## Running NeuroCuts
