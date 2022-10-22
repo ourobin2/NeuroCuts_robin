@@ -12,7 +12,7 @@ RUN pip install --upgrade pip cmake
 # todo: remove
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 
-RUN apt-get update && apt install libgl1 -y
+RUN apt-get update && apt install rsync libgl1 -y
 COPY ./context/requirements.txt .
 RUN pip install -r requirements.txt
 

@@ -1,7 +1,9 @@
 ray==0.8.7
 opencv-python
 setproctitle
+tensorboardX
 tabulate
+dm_tree
 requests
 pandas
 psutil

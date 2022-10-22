@@ -1,6 +1,6 @@
 import sys
 
-from tree import *
+from nc_tree import *
 from hicuts import *
 from hypercuts import *
 from efficuts import *

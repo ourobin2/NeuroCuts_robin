@@ -8,7 +8,7 @@ from gym.spaces import Tuple, Box, Discrete, Dict
 from ray.rllib.env import MultiAgentEnv
 from ray.rllib.evaluation.rollout_worker import get_global_worker
 
-from tree import Tree, load_rules_from_file
+from nc_tree import Tree, load_rules_from_file
 from hicuts import HiCuts
 
 NUM_DIMENSIONS = 5
