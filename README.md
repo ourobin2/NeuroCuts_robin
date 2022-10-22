@@ -4,9 +4,20 @@ NeuroCuts is a deep RL algorithm for generating optimized packet classification 
 
 ## What this fork is for
 
-It took me a while to make NeuroCuts mid-2019 code work in October 2022. 
+@alexeyev: It took me a while to make NeuroCuts mid-2019 code work in October 2022. 
 This repository's purpose is to make the setup easier 
 (e.g. for results reproduction or whatever).
+
+```bash
+cd neurocuts-docker
+docker build -t neurocuts .
+nvidia-docker run -it neurocuts:latest bash
+```
+
+To check that everything works, when inside, run
+```bash
+python run_neurocuts.py --rules=acl5_1k --fast --gpu --num-workers 2 
+```
 
 ## Running NeuroCuts
 
