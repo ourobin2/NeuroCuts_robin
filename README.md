@@ -12,6 +12,9 @@ You don't have to use Docker, you could just
 1. install tensorflow:1.14.0,
 2. take a look at [requirements.txt](/context/requirements.txt)
 
+For those using anaconda, outdated `ray` and `opencv-python` can only be installed 
+via `pip`, `gym` lives in `conda-forge`.
+
 This code might work with other versions of libraries; my primary 
 goal was to prepare a config that WORKS. No guarantees, though :)
 
