@@ -72,11 +72,11 @@ parser.add_argument(
 parser.add_argument(
     "--gpu", action="store_true", help="Whether to tell RLlib to use a GPU.")
 
-parser.add_argument(
-    "--redis-address",
-    type=str,
-    default=None,
-    help="Address of existing Ray cluster to connect to.")
+# parser.add_argument(
+#     "--redis-address",
+#     type=str,
+#     default=None,
+#     help="Address of existing Ray cluster to connect to.")
 
 
 def on_episode_end(info):
