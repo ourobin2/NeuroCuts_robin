@@ -1,10 +1,10 @@
 import tensorflow.compat.v1 as tf
 
-from ray.rllib.models import Model
+from ray.rllib.models import ModelV2
 from ray.rllib.models.tf.misc import normc_initializer
 
 
-class PartitionMaskModel(Model):
+class PartitionMaskModel(ModelV2):
     """Model that only allows the partitioning action at the first level.
     """
 

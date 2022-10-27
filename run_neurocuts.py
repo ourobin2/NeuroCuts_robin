@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import tensorflow.compat.v1 as tf
+from ray.rllib.algorithms.callbacks import DefaultCallbacks
+
 tf.disable_v2_behavior()
 
 import argparse
@@ -14,7 +16,7 @@ import numpy as np
 from ray.rllib.models import ModelCatalog
 import ray
 from ray import tune
-from ray.tune import run_experiments, grid_search
+from ray.tune import run_experiments, grid_search, Callback
 from ray.tune.registry import register_env
 from ray.rllib.evaluation.sample_batch_builder import SampleBatch
 from ray.rllib.evaluation.postprocessing import Postprocessing
@@ -107,6 +109,11 @@ def on_episode_end(info):
     episode.custom_metrics.update(info)
 
 
+class OnEpisodeEndCallback(DefaultCallbacks):
+    def on_episode_end(self, **info):
+        on_episode_end(info)
+
+
 def postprocess_gae(info):
     traj = info["post_batch"]
     infos = traj[SampleBatch.INFOS]
@@ -120,7 +127,7 @@ def postprocess_gae(info):
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    ray.init(redis_address=args.redis_address)
+    # ray.init(redis_address=args.redis_address)
 
     register_env(
         "tree_env", lambda env_config: NeuroCutsEnv(
@@ -147,10 +154,10 @@ if __name__ == "__main__":
             },
             "config": {
                 "log_level": "WARN",
-                "num_gpus": 0.2 if args.gpu else 0,
+                "num_gpus": 0.9 if args.gpu else 0,
                 "num_workers": args.num_workers,
                 "sgd_minibatch_size": 100 if args.fast else 1000,
-                "sample_batch_size": 200 if args.fast else 5000,
+                # "sample_batch_size": 200 if args.fast else 5000,
                 "train_batch_size": 1000 if args.fast else 15000,
                 "batch_mode": "complete_episodes",
                 "observation_filter": "NoFilter",
@@ -160,10 +167,11 @@ if __name__ == "__main__":
                 },
                 "vf_share_layers": False,
                 "entropy_coeff": 0.01,
-                "callbacks": {
-                    "on_episode_end": tune.function(on_episode_end),
-#                    "on_postprocess_traj": tune.function(postprocess_gae),
-                },
+                "callbacks": OnEpisodeEndCallback,
+#                     {
+#                     "on_episode_end": tune.function(on_episode_end),
+# #                    "on_postprocess_traj": tune.function(postprocess_gae),
+#                 },
                 "env_config": {
                     "tree_gae": False,
                     "tree_gae_gamma": 1.0,
