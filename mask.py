@@ -24,14 +24,20 @@ class PartitionMaskModel(ModelV2):
         super(PartitionMaskModel, self).__init__(obs_space, action_space, num_outputs,
                                                  model_config, name, framework="tf")
 
+    # def forward(self,input_dict,state,seq_lens):
+    #     return self._build_layers_v2(input_dict)
+
     def _build_layers_v2(self, input_dict, num_outputs, options):
         mask = input_dict["obs"]["action_mask"]
 
         last_layer = input_dict["obs"]["real_obs"]
         hiddens = options["fcnet_hiddens"]
+        var_list = []
 
         for i, size in enumerate(hiddens):
+
             label = "fc{}".format(i)
+
             last_layer = tf.layers.dense(
                 last_layer,
                 size,
@@ -39,12 +45,19 @@ class PartitionMaskModel(ModelV2):
                 activation=tf.nn.tanh,
                 name=label)
 
+            var_list.extend(last_layer.var_list)
+            print("var_list ext:", var_list)
+
         action_logits = tf.layers.dense(
             last_layer,
             num_outputs,
             kernel_initializer=normc_initializer(0.01),
             activation=None,
             name="fc_out")
+
+        var_list.extend(action_logits.var_list)
+        self.var_list = var_list
+        print("finally", self.var_list)
 
         if num_outputs == 1:
             return action_logits, last_layer

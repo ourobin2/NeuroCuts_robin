@@ -7,16 +7,12 @@ tf.disable_v2_behavior()
 
 import argparse
 import os
-import glob
 import json
 
-from gym.spaces import Tuple, Box, Discrete, Dict
 import numpy as np
 
 from ray.rllib.models import ModelCatalog
-import ray
-from ray import tune
-from ray.tune import run_experiments, grid_search, Callback
+from ray.tune import run_experiments, grid_search
 from ray.tune.registry import register_env
 from ray.rllib.evaluation.sample_batch_builder import SampleBatch
 from ray.rllib.evaluation.postprocessing import Postprocessing
@@ -27,15 +23,14 @@ from mask import PartitionMaskModel
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--rules",
-    type=lambda expr: [
-        os.path.abspath("classbench/{}".format(r)) for r in expr.split(",")],
-    default="acl5_1k",
-    help="Rules file name or list of rules files separated by comma.")
+                    type=lambda expr: [os.path.abspath("classbench/{}".format(r)) for r in expr.split(",")],
+                    default="acl5_1k",
+                    help="Rules file name or list of rules files separated by comma.")
 
 parser.add_argument(
     "--dump-dir",
     type=str,
-    default="/tmp/neurocuts_out",
+    default="./dump_dir/",
     help="Dump valid trees to this directory for later inspection.")
 
 parser.add_argument(
@@ -71,6 +66,7 @@ parser.add_argument(
 
 parser.add_argument(
     "--gpu", action="store_true", help="Whether to tell RLlib to use a GPU.")
+
 
 # parser.add_argument(
 #     "--redis-address",
@@ -121,6 +117,8 @@ def postprocess_gae(info):
         [i["__advantage__"] for i in infos])
     traj[Postprocessing.VALUE_TARGETS] = np.array(
         [i["__value_target__"] for i in infos])
+
+
 #    print("override adv and v targets", traj[Postprocessing.ADVANTAGES],
 #          traj[Postprocessing.VALUE_TARGETS])
 
@@ -168,10 +166,10 @@ if __name__ == "__main__":
                 "vf_share_layers": False,
                 "entropy_coeff": 0.01,
                 "callbacks": OnEpisodeEndCallback,
-#                     {
-#                     "on_episode_end": tune.function(on_episode_end),
-# #                    "on_postprocess_traj": tune.function(postprocess_gae),
-#                 },
+                #                     {
+                #                     "on_episode_end": tune.function(on_episode_end),
+                # #                    "on_postprocess_traj": tune.function(postprocess_gae),
+                #                 },
                 "env_config": {
                     "tree_gae": False,
                     "tree_gae_gamma": 1.0,
