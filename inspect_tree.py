@@ -15,13 +15,13 @@ def print_info(tree):
     print("This tree has {} rules".format(len(tree.rules)))
     print("Tree stats: {}".format(tree.compute_result()))
     print("Plottable visualization:\n{}".format(tree.stats_str()))
-    print("Layers info {}".format(tree.print_layers()))
+    #print("Layers info {}".format(tree.print_layers()))
 
 
 def check_classification(tree):
     failures = 0
     for i in range(10000):
-        if i % 100 == 0:
+        if i % 1000 == 0:
             print("Testing randomly sampled packets", i)
         if random.random() > 0.5:
             packet = random.choice(tree.rules).sample_packet()
