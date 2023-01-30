@@ -13,14 +13,14 @@ fw_seed_files = []
 ipc_seed_files = []
 
 for i in range(1, 6):
-    seed_files.append("acl%d_seed" % i)
-    acl_seed_files.append("acl%d_seed" % i)
+    seed_files.append("acl%d" % i)
+    acl_seed_files.append("acl%d" % i)
 for i in range(1, 6):
-    seed_files.append("fw%d_seed" % i)
-    fw_seed_files.append("fw%d_seed" % i)
+    seed_files.append("fw%d" % i)
+    fw_seed_files.append("fw%d" % i)
 for i in range(1, 3):
-    seed_files.append("ipc%d_seed" % i)
-    ipc_seed_files.append("ipc%d_seed" % i)
+    seed_files.append("ipc%d" % i)
+    ipc_seed_files.append("ipc%d" % i)
 
 
 def exe_cmd(cmd):
@@ -40,7 +40,7 @@ def gen_rules():
             exe_cmd(cmd)
 
 
-EXPRS = ["1k"]
+EXPRS = ["1k","10k"]
 
 
 def run_hicuts():
@@ -107,15 +107,15 @@ def run_all_hicuts(files_type):
         i_list = ipc_seed_files
     else:
         i_list = seed_files
-    i_list = ["acl3_seed"]
-    j_list = [100000]
+    #i_list = ["acl3_seed"]
+    j_list = EXPRS
     k_list = ["HiCuts"]
     for j in j_list:
         for i in i_list:
             # for j in [1000, 10000, 100000]:
-            print("%s Rules %s_%d" % (datetime.datetime.now(), i, j))
+            print("%s Rules %s_%s" % (datetime.datetime.now(), i, j))
             for k in k_list:  #, "CutSplit"]:
-                rules = load_rules_from_file("classbench/%s_%d" % (i, j))
+                rules = load_rules_from_file("classbench/%s_%s" % (i, j))
                 cuts = None
                 if k == "HiCuts":
                     cuts = HiCuts(rules)
