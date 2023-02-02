@@ -77,7 +77,7 @@ def run_cutsplit():
 
 def run_all():
     # seed_files = ["ipc2_seed"]
-    j_list = [1000, 10000, 100000]
+    j_list = EXPRS
     k_list = ["HyperCuts"]
     for i in seed_files:
         for j in j_list:
@@ -140,14 +140,14 @@ def run_all_hypercuts(files_type):
         i_list = seed_files
     # i_list = [files_type]
     # j_list = [1000, 10000, 100000]
-    j_list = [100000]
+    j_list = EXPRS
     k_list = ["HyperCuts"]
     for i in i_list:
         for j in j_list:
             # for j in [1000, 10000, 100000]:
-            print("%s Rules %s_%d" % (datetime.datetime.now(), i, j))
+            print("%s Rules %s_%s" % (datetime.datetime.now(), i, j))
             for k in k_list:  #, "CutSplit"]:
-                rules = load_rules_from_file("classbench/%s_%d" % (i, j))
+                rules = load_rules_from_file("classbench/%s_%s" % (i, j))
                 cuts = None
                 if k == "HiCuts":
                     cuts = HiCuts(rules)
@@ -185,15 +185,15 @@ def run_all_efficuts(files_type):
         i_list = ipc_seed_files
     else:
         i_list = seed_files
-    j_list = [1000, 10000, 100000]
+    j_list = EXPRS
     # j_list = [10000]
     k_list = ["EffiCuts"]
     for j in j_list:
         for i in i_list:
             # for j in [1000, 10000, 100000]:
-            print("%s Rules %s_%d" % (datetime.datetime.now(), i, j))
+            print("%s Rules %s_%s" % (datetime.datetime.now(), i, j))
             for k in k_list:  #, "CutSplit"]:
-                rules = load_rules_from_file("classbench/%s_%d" % (i, j))
+                rules = load_rules_from_file("classbench/%s_%s" % (i, j))
                 cuts = None
                 if k == "HiCuts":
                     cuts = HiCuts(rules)
@@ -253,3 +253,4 @@ if __name__ == "__main__":
         gen_result(sys.argv[2])
     else:
         print("Not supported option")
+
