@@ -754,15 +754,16 @@ class Tree:
         print(self.stats_str())
 
     def print_layers(self, layer_num=5):
+        path = '/content/drive/MyDrive/CIAL/output.txt'
+        f = open(path, 'w')
         nodes = [self.root]
         for i in range(layer_num):
             if len(nodes) == 0:
                 return
-
-            print("Layer", i)
+            print("Layer", i, file=f)
             next_layer_nodes = []
             for node in nodes:
-                print(node)
+                print(node, file=f)                
                 next_layer_nodes.extend(node.children)
             nodes = next_layer_nodes
 
