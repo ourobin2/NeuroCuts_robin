@@ -11,11 +11,11 @@ parser.add_argument(
     "file", type=str, help="The tree pkl file to load and analyze.")
 
 
-def print_info(tree):
+def print_info(tree):    
     print("This tree has {} rules".format(len(tree.rules)))
     print("Tree stats: {}".format(tree.compute_result()))
     print("Plottable visualization:\n{}".format(tree.stats_str()))
-    #print("Layers info {}".format(tree.print_layers()))
+    print("Layers info {}".format(tree.print_layers()))
 
 
 def check_classification(tree):
@@ -81,7 +81,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     with open(args.file, "rb") as f:
         tree = pickle.load(f)
+    
     print_info(tree)
+    f.close() 
     check_invariants(tree.root)
     check_classification(tree)
     print("All checks ok, this looks like a valid tree.")
+    
