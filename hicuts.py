@@ -98,6 +98,10 @@ class HiCuts(object):
             if count % 10000 == 0:
                 print(datetime.datetime.now(), "Depth:", tree.get_depth(),
                       "Remaining nodes:", len(tree.nodes_to_cut))
+        print("This tree has {} rules".format(len(tree.rules)))
+        print("Tree stats: {}".format(tree.compute_result()))
+        print("Plottable visualization:\n{}".format(tree.stats_str()))
+        print("Layers info {}".format(tree.print_layers())) #
         return tree
 
     def get_depth(self):
