@@ -724,29 +724,40 @@ class Tree:
     def get_stats(self):
         widths = []
         dim_stats = []
+        dim_par_stats = [] ##
         nodes = [self.root]
         while len(nodes) != 0 and len(widths) < 30:
             dim = [0] * 5
+            dim_par = [0] * 5 ###
             next_layer_nodes = []
             for node in nodes:
                 next_layer_nodes.extend(node.children)
                 if node.action and node.action[0] == "cut":
                     dim[node.action[1]] += 1
+                if node.action and node.action[0] == "partition": ###
+                    dim_par[node.action[1]] += 1 ###
             widths.append(len(nodes))
             dim_stats.append(dim)
+            dim_par_stats.append(dim_par) ###
             nodes = next_layer_nodes
         return {
             "widths": widths,
             "dim_stats": dim_stats,
+            "dim_par_stats": dim_par_stats, ##
         }
 
     def stats_str(self):
         stats = self.get_stats()
         out = "widths" + "," + ",".join(map(str, stats["widths"]))
-        out += "\n"
+        out += "\n---cut---\n"
         for i in range(len(stats["dim_stats"][0])):
             out += "dim{}".format(i) + "," + ",".join(
                 str(d[i]) for d in stats["dim_stats"])
+            out += "\n"
+        out += "---partition---\n" ###
+        for i in range(len(stats["dim_par_stats"][0])): ###
+            out += "dim{}".format(i) + "," + ",".join( ###
+                str(d[i]) for d in stats["dim_par_stats"]) ###
             out += "\n"
         return out
 
