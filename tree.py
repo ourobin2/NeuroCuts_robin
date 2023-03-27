@@ -725,40 +725,54 @@ class Tree:
         widths = []
         dim_stats = []
         dim_par_stats = [] ##
+        num_actions = [] ##
+        num_leafnodes = [] ##
         nodes = [self.root]
         while len(nodes) != 0 and len(widths) < 30:
             dim = [0] * 5
             dim_par = [0] * 5 ###
+            num = [0]
             next_layer_nodes = []
             for node in nodes:
                 next_layer_nodes.extend(node.children)
                 if node.action and node.action[0] == "cut":
                     dim[node.action[1]] += 1
+                    num[0] += 1
                 if node.action and node.action[0] == "partition": ###
                     dim_par[node.action[1]] += 1 ###
+                    num[0] += 1
             widths.append(len(nodes))
             dim_stats.append(dim)
             dim_par_stats.append(dim_par) ###
+            num_actions.append(num[0]) ###
+            num_leafnodes.append(len(nodes)-num[0])
             nodes = next_layer_nodes
         return {
             "widths": widths,
             "dim_stats": dim_stats,
             "dim_par_stats": dim_par_stats, ##
+            "num_actions": num_actions,
+            "num_leafnodes": num_leafnodes,
         }
 
     def stats_str(self):
         stats = self.get_stats()
         out = "widths" + "," + ",".join(map(str, stats["widths"]))
-        out += "\n---cut---\n"
+        out += "\ncut:\n"
         for i in range(len(stats["dim_stats"][0])):
             out += "dim{}".format(i) + "," + ",".join(
                 str(d[i]) for d in stats["dim_stats"])
             out += "\n"
-        out += "---partition---\n" ###
+        out += "partition:\n" ###
         for i in range(len(stats["dim_par_stats"][0])): ###
             out += "dim{}".format(i) + "," + ",".join( ###
                 str(d[i]) for d in stats["dim_par_stats"]) ###
             out += "\n"
+        out += "\n"
+        out += "num_actions" + "," + ",".join(map(str, stats["num_actions"]))
+        out += "\n"
+        out += "num_leafnodes" + "," + ",".join(map(str, stats["num_leafnodes"]))
+        out += "\n"
         return out
 
     def print_stats(self):
