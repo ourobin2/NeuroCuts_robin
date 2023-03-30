@@ -27,7 +27,7 @@ class NeuroCutsEnv(MultiAgentEnv):
     def __init__(self,
                  rules_file,
                  leaf_threshold=16,
-                 max_cuts_per_dimension=5,
+                 max_cuts_per_dimension=6, ###
                  max_actions_per_episode=5000,
                  max_depth=100,
                  partition_mode=None,
@@ -81,13 +81,14 @@ class NeuroCutsEnv(MultiAgentEnv):
             self.num_part_levels = 0
         self.action_space = Tuple([
             Discrete(NUM_DIMENSIONS),
-            Discrete(max_cuts_per_dimension + self.num_part_levels)
+            Discrete(max_cuts_per_dimension + self.num_part_levels),
+            Discrete(2)
         ])
         self.observation_space = Dict({
             "real_obs": Box(0, 99999999, (279, ), dtype=np.float32),
             "action_mask": Box(
                 0,
-                1, (NUM_DIMENSIONS + max_cuts_per_dimension + self.num_part_levels, ),
+                1, (NUM_DIMENSIONS + max_cuts_per_dimension + self.num_part_levels+2, ), ##
                 dtype=np.float32),
         })
 
@@ -135,19 +136,30 @@ class NeuroCutsEnv(MultiAgentEnv):
             if np.isscalar(action):
                 assert not self.partition_enabled, action
                 partition = False
-                cut_dimension = int(action) % 5
-                cut_num = int(action) // 5
+                action_type = int(action) % 2 ###
+                new_action = int(action) // 2 ###
+                cut_dimension = int(new_action) % 5 ###
+                cut_num = int(new_action) // 5 ###
+                #cut_dimension = int(action) % 5
+                #cut_num = int(action) // 5
+                #action = [cut_dimension, cut_num]
+
                 action = [cut_dimension, cut_num]
             else:
                 if action[1] >= self.max_cuts_per_dimension:
                     assert self.partition_enabled, (
                         action, self.max_cuts_per_dimension)
                     partition = True
+                    action_type = action[2] ##
+                    print("++++++") ##
                     action[1] -= self.max_cuts_per_dimension
                 else:
-                    partition = False
+                    partition = False 
+                    action_type = action[2] ##
 
-            if partition:
+
+            #if partition: 
+            if action_type: ##
                 children = self.tree.partition_node(node, action[0], action[1])
             else:
                 cut_dimension, cut_num = self.action_tuple_to_cut(node, action)
@@ -227,8 +239,8 @@ class NeuroCutsEnv(MultiAgentEnv):
         return obs, rew, done, info
 
     def save_if_best(self, result):
-        time_stat = int(result["memory_access"])
-        space_stat = int(result["bytes_per_rule"])
+        time_stat = round(float(result["memory_access"]),2)
+        space_stat = round(float(result["bytes_per_rule"]),2)
         save = False
         if time_stat < self.best_time:
             self.best_time = time_stat
@@ -409,16 +421,16 @@ class NeuroCutsEnv(MultiAgentEnv):
         return {
             "real_obs": zeros,
             "action_mask": np.array([1] *
-                (5 + self.max_cuts_per_dimension + self.num_part_levels)),
+                (5 + self.max_cuts_per_dimension + self.num_part_levels+2)),
         }
 
     def _encode_state(self, node):
-        if node.depth > 1:
-            action_mask = ([1] * (NUM_DIMENSIONS + self.max_cuts_per_dimension) +
+        if node.depth < 0:
+            action_mask = ([1] * (NUM_DIMENSIONS + self.max_cuts_per_dimension+2) +
                            [0] * self.num_part_levels)
         else:
-            assert node.depth == 1, node.depth
-            action_mask = ([1] * (NUM_DIMENSIONS + self.max_cuts_per_dimension)
+            #assert node.depth == 1, node.depth
+            action_mask = ([1] * (NUM_DIMENSIONS + self.max_cuts_per_dimension+2)
                            + [1] * self.num_part_levels)
         s = np.array(node.get_state())
         return {
