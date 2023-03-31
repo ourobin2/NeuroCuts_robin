@@ -239,7 +239,7 @@ class NeuroCutsEnv(MultiAgentEnv):
         return obs, rew, done, info
 
     def save_if_best(self, result):
-        time_stat = round(float(result["memory_access"]),2)
+        time_stat = int(result["memory_access"])
         space_stat = round(float(result["bytes_per_rule"]),2)
         save = False
         if time_stat < self.best_time:
