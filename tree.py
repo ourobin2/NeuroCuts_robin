@@ -1,3 +1,6 @@
+
+ 
+
 import math
 import random
 import numpy as np
@@ -687,7 +690,7 @@ class Tree:
         #     region boundary for non-leaf: 16 bytes
         #     each child pointer: 4 bytes
         #     each rule: 16 bytes
-        result = {"bytes_per_rule": 0, "memory_access": 0, \
+        result = {"bytes_per_rule": 0, "memory_access": 0, "update_memory_access": 0,## \
             "num_leaf_node": 0, "num_nonleaf_node": 0, "num_node": 0}
         nodes = [self.root]
         while len(nodes) != 0:
@@ -706,10 +709,22 @@ class Tree:
             nodes = next_layer_nodes
 
         result["memory_access"] = self._compute_memory_access(self.root)
+        result["update_memory_access"] = self._compute_update_memory_access(self.root)
         result["bytes_per_rule"] = result["bytes_per_rule"] / len(self.rules)
         result[
             "num_node"] = result["num_leaf_node"] + result["num_nonleaf_node"]
         return result
+
+    def _compute_update_memory_access(self, node):
+        if self.is_leaf(node) or not node.children:
+            return 1
+
+        if node.is_partition():
+            return 1 + max(
+                self._compute_update_memory_access(n) for n in node.children)
+        else:
+            return sum(self._compute_update_memory_access(n) for n in node.children)
+
 
     def _compute_memory_access(self, node):
         if self.is_leaf(node) or not node.children:
