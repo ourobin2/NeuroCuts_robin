@@ -59,8 +59,8 @@ class HiCuts(object):
         result = tree.compute_result()
         result["bytes_per_rule"] = result["bytes_per_rule"] / len(tree.rules)
         print("------mem_result-----")
-        print("%s Result %d %d %d" %
-              (datetime.datetime.now(), result["memory_access"],
+        print("%s Result %d %d %d %d" %
+              (datetime.datetime.now(), result["memory_access"], result["update_memory_access"],
                round(result["bytes_per_rule"]), result["num_node"]))
         # print("------traverse_result-----")
         # result = tree.compute_result()
