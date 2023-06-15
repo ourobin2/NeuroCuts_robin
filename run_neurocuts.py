@@ -26,7 +26,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--rules",
     type=lambda expr: [
-        os.path.abspath("classbench/{}".format(r)) for r in expr.split(",")],
+        os.path.abspath("ruleset/{}".format(r)) for r in expr.split(",")],
     default="acl5_1k",
     help="Rules file name or list of rules files separated by comma.")
 
