@@ -400,7 +400,8 @@ class Tree:
 
         small_rules = []
         big_rules = []
-        max_size = [2**32, 2**32, 2**16, 2**16, 2**8][part_dim]
+        #max_size = [2**32, 2**32, 2**16, 2**16, 2**8][part_dim]
+        max_size = [node.ranges[1]-node.ranges[0], node.ranges[3]-node.ranges[2], node.ranges[5]-node.ranges[4], node.ranges[7]-node.ranges[6], node.ranges[9]-node.ranges[8]][part_dim] #update
         threshold = max_size * 0.02 * 2**part_size  # 2% ... 64%
         for rule in node.rules:
             if fits(rule, threshold):
