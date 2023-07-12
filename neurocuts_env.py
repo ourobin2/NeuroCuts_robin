@@ -17,7 +17,6 @@ NUM_PART_LEVELS = 6  # 2%, 4%, 8%, 16%, 32%, 64%
 
 class NeuroCutsEnv(MultiAgentEnv):
     """NeuroCuts multi-agent tree building environment.
-
     In this env, each "cut" in the tree is an action taken by a
     different agent. All the agents share the same policy. We
     aggregate rewards at the end of the episode and assign each
@@ -33,6 +32,7 @@ class NeuroCutsEnv(MultiAgentEnv):
                  partition_mode=None,
                  reward_shape="linear",
                  depth_weight=1.0,
+                 update_weight = 0, ##
                  dump_dir=None,
                  tree_gae=True,
                  tree_gae_gamma=1.0,
@@ -63,8 +63,10 @@ class NeuroCutsEnv(MultiAgentEnv):
                 pass
         self.best_time = float("inf")
         self.best_space = float("inf")
+        self.best_utime = float("inf") ##
 
         self.depth_weight = depth_weight
+        self.update_weight = update_weight ##
         self.rules_file = rules_file
         self.rules = load_rules_from_file(rules_file)
         self.leaf_threshold = leaf_threshold
@@ -136,10 +138,16 @@ class NeuroCutsEnv(MultiAgentEnv):
             if np.isscalar(action):
                 assert not self.partition_enabled, action
                 partition = False
-                action_type = int(action) % 2 ###
-                new_action = int(action) // 2 ###
-                cut_dimension = int(new_action) % 5 ###
-                cut_num = int(new_action) // 5 ###
+                if (int(action)<30): ###
+                    action_type = 0 ###
+                    new_action = int(action) ###
+                    cut_dimension = int(new_action) % 5 ###
+                    cut_num = int(new_action) // 6 ###
+                else:
+                    action_type = 1 ###
+                    new_action = int(action) - 30 ###
+                    cut_dimension = int(new_action) % 5 ###
+                    cut_num = int(new_action) // 6 ###
                 #cut_dimension = int(action) % 5
                 #cut_num = int(action) // 5
                 #action = [cut_dimension, cut_num]
@@ -190,7 +198,7 @@ class NeuroCutsEnv(MultiAgentEnv):
                 or self.num_actions > self.max_actions_per_episode
                 or self.tree.get_current_node() is None):
             zero_state = self._zeros()
-            rew = self.compute_rewards(self.depth_weight)
+            rew = self.compute_rewards(self.depth_weight,self.update_weight)
             stats = {}
             obs = {node_id: zero_state for node_id in rew.keys()}
             if self.tree_gae:
@@ -212,6 +220,7 @@ class NeuroCutsEnv(MultiAgentEnv):
             info[self.tree.root.id].update({
                 "bytes_per_rule": result["bytes_per_rule"],
                 "memory_access": result["memory_access"],
+                "update_memory_access": result["update_memory_access"],
                 "exceeded_max_depth": len(self.exceeded_max_depth),
                 "tree_depth": self.tree.get_depth(),
                 "tree_stats": self.tree.get_stats(),
@@ -241,6 +250,7 @@ class NeuroCutsEnv(MultiAgentEnv):
     def save_if_best(self, result):
         time_stat = int(result["memory_access"])
         space_stat = round(float(result["bytes_per_rule"]),2)
+        update_stat = int(result["update_memory_access"])
         save = False
         if time_stat < self.best_time:
             self.best_time = time_stat
@@ -248,10 +258,13 @@ class NeuroCutsEnv(MultiAgentEnv):
         if space_stat < self.best_space:
             self.best_space = space_stat
             save = True
+        if update_stat < self.best_utime:
+            self.best_utime = update_stat
+            save = True
         if save:
             out = os.path.join(
-                self.dump_dir, "{}-{}-acc-{}-bytes-{}.pkl".format(
-                    os.path.basename(self.rules_file), time_stat, space_stat,
+                self.dump_dir, "{}-{}-acc-{}-uacc-{}-bytes-{}.pkl".format(
+                    os.path.basename(self.rules_file), time_stat, update_stat, space_stat,
                     time.time()))
             print("Saving tree to {}".format(out))
             with open(out, "wb") as f:
@@ -266,7 +279,6 @@ class NeuroCutsEnv(MultiAgentEnv):
 
     def compute_gae(self, depth_weight):
         """Compute GAE for a branching decision environment.
-
            V(d) = min over nodes n at depth=d V(n)
         """
 
@@ -378,9 +390,10 @@ class NeuroCutsEnv(MultiAgentEnv):
 
         return advantages, stats
 
-    def compute_rewards(self, depth_weight):
+    def compute_rewards(self, depth_weight, update_weight):
         depth_to_go = collections.defaultdict(int)
         nodes_to_go = collections.defaultdict(int)
+        updates_to_go = collections.defaultdict(int) ##
         num_updates = 1
         while num_updates > 0:
             num_updates = 0
@@ -389,18 +402,27 @@ class NeuroCutsEnv(MultiAgentEnv):
                     if self.tree.is_leaf(node):
                         depth_to_go[node_id] = 0
                         nodes_to_go[node_id] = 0
+                        updates_to_go[node_id] = 0 ##
                     else:
                         depth_to_go[node_id] = 1
                         nodes_to_go[node_id] = 1
+                        updates_to_go[node_id] = 1 ##
                 if node_id in self.child_map:
                     if self.node_map[node_id].is_partition():
-                        max_child_depth = self.tree_gae_gamma * sum(
+                        max_child_depth = 1+ self.tree_gae_gamma * sum(
                             [depth_to_go[c] for c in self.child_map[node_id]])
+                        max_child_update = 1+ self.tree_gae_gamma * max(
+                            [updates_to_go[c] for c in self.child_map[node_id]]) ##
                     else:
                         max_child_depth = 1 + self.tree_gae_gamma * max(
                             [depth_to_go[c] for c in self.child_map[node_id]])
-                    if max_child_depth > depth_to_go[node_id]:
-                        depth_to_go[node_id] = max_child_depth
+                        max_child_update = self.tree_gae_gamma * sum( 
+                            [updates_to_go[c] for c in self.child_map[node_id]]) ##
+                    if max_child_depth > depth_to_go[node_id]: ##
+                        depth_to_go[node_id] = max_child_depth ##
+                        num_updates += 1 ##
+                    if max_child_update > updates_to_go[node_id]:
+                        updates_to_go[node_id] = max_child_update
                         num_updates += 1
                     sum_child_cuts = len(self.child_map[node_id]) + sum(
                         [nodes_to_go[c] for c in self.child_map[node_id]])
@@ -409,7 +431,7 @@ class NeuroCutsEnv(MultiAgentEnv):
                         num_updates += 1
         rew = {
             node_id:
-            -depth_weight * self.reward_shape(depth) - (1.0 - depth_weight) *
+            -depth_weight * self.reward_shape(depth) - update_weight * self.reward_shape(float(updates_to_go[node_id])) -  (1.0 - depth_weight- update_weight) *
             self.reward_shape(float(nodes_to_go[node_id]))
             for (node_id, depth) in depth_to_go.items()
             if node_id in self.child_map
