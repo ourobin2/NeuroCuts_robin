@@ -2,7 +2,9 @@ import math
 import datetime
 
 from tree import *
-
+import pickle
+import time
+import os
 
 class HiCuts(object):
     def __init__(self, rules):
@@ -102,6 +104,12 @@ class HiCuts(object):
         print("Tree stats: {}".format(tree.compute_result()))
         print("Plottable visualization:\n{}".format(tree.stats_str()))
         print("Layers info {}".format(tree.print_layers())) #
+        ###
+        out = os.path.join(
+                "hicuts/", "%s.pkl".format(time.time()))
+        print("Saving tree to {}".format(out))
+        with open(out, "wb") as f:
+          pickle.dump(self.tree, f)
         return tree
 
     def get_depth(self):
