@@ -108,6 +108,14 @@ def run_all_hicuts(files_type):
     else:
         i_list = seed_files
     #i_list = ["acl3_seed"]
+    ###
+    print("%s Rules %s" % (datetime.datetime.now(), files_type))
+    rules = load_rules_from_file("classbench/%s" % (files_type))
+    cuts = HiCuts(rules)
+    cuts.train()
+    ###
+    
+    """
     j_list = EXPRS
     k_list = ["HiCuts"]
     for j in j_list:
@@ -125,7 +133,7 @@ def run_all_hicuts(files_type):
                     cuts = EffiCuts(rules)
                 elif k == "CutSplit":
                     cuts = CutSplit(rules)
-                cuts.train()
+                cuts.train()"""
 
 
 def run_all_hypercuts(files_type):
