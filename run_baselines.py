@@ -110,7 +110,7 @@ def run_all_hicuts(files_type):
     #i_list = ["acl3_seed"]
     ###
     print("%s Rules %s" % (datetime.datetime.now(), files_type))
-    rules = load_rules_from_file("classbench/%s" % (files_type))
+    rules = load_rules_from_file("ruleset/%s" % (files_type))
     cuts = HiCuts(rules)
     cuts.train()
     ###
