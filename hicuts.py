@@ -60,6 +60,16 @@ class HiCuts(object):
 
         result = tree.compute_result()
         result["bytes_per_rule"] = result["bytes_per_rule"] / len(tree.rules)
+        ###---------------
+        """time_stat = int(result["memory_access"])
+        space_stat = round(float(result["bytes_per_rule"]),2)
+        update_stat = int(result["update_memory_access"])
+        out = os.path.join( "/content/drive/MyDrive/CIAL",
+                 "{}-acc-{}-uacc-{}-bytes-{}.pkl".format(time_stat, update_stat, space_stat,time.time()))
+        print("Saving tree to {}".format(out))
+        with open(out, "wb") as f:
+          pickle.dump(tree, f)"""
+        ###-----------------------
         print("------mem_result-----")
         print("%s Result %d %d %d %d" %
               (datetime.datetime.now(), result["memory_access"], result["update_memory_access"],
@@ -105,11 +115,7 @@ class HiCuts(object):
         print("Plottable visualization:\n{}".format(tree.stats_str()))
         print("Layers info {}".format(tree.print_layers())) #
         ###
-        out = os.path.join(
-                "hicuts/", "%s.pkl".format(time.time()))
-        print("Saving tree to {}".format(out))
-        with open(out, "wb") as f:
-          pickle.dump(self.tree, f)
+        
         return tree
 
     def get_depth(self):
