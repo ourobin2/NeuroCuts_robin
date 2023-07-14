@@ -148,6 +148,14 @@ def run_all_hypercuts(files_type):
         i_list = seed_files
     # i_list = [files_type]
     # j_list = [1000, 10000, 100000]
+    ###
+    print("%s Rules %s" % (datetime.datetime.now(), files_type))
+    rules = load_rules_from_file("ruleset/%s" % (files_type))
+    cuts = HyperCuts(rules)
+    cuts.train()
+
+    ###
+    """
     j_list = EXPRS
     k_list = ["HyperCuts"]
     for i in i_list:
@@ -165,7 +173,7 @@ def run_all_hypercuts(files_type):
                     cuts = EffiCuts(rules)
                 elif k == "CutSplit":
                     cuts = CutSplit(rules)
-                cuts.train()
+                cuts.train()"""
 
 
 def run_file(file_name, alg):
