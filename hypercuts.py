@@ -163,9 +163,10 @@ class HyperCuts(object):
                 print(datetime.datetime.now(), "Depth:", tree.get_depth(),
                       "Remaining nodes:", len(tree.nodes_to_cut))
         # return tree.compute_result()
-        tree.result["bytes_per_rule"] = tree.result["bytes_per_rule"] / len(
-            tree.rules)
-        return tree.result
+        #result = {} #
+        result = tree.compute_result()
+        #tree.result["bytes_per_rule"] = tree.result["bytes_per_rule"] / len(tree.rules)
+        return result
 
     def train(self):
 
@@ -187,12 +188,13 @@ class HyperCuts(object):
         result = {}
         result[
             "memory_access"] = result_wset["memory_access"] + result_rset["memory_access"]
+        result["update_memory_access"] = result_wset["update_memory_access"] + result_rset["update_memory_access"]
         result["num_node"] = result_wset["num_node"] + result_rset["num_node"]
         result["bytes_per_rule"] = \
             (result_wset["bytes_per_rule"] * len(rules_wset) + \
             result_rset["bytes_per_rule"] * len(rules_rset)) / \
             len(self.rules)
 
-        print("%s Result %d %d %d" %
-              (datetime.datetime.now(), result["memory_access"],
+        print("%s Result %d %d %d %d" %
+              (datetime.datetime.now(), result["memory_access"], result["update_memory_access"],
                round(result["bytes_per_rule"]), result["num_node"]))
